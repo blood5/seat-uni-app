@@ -76,19 +76,20 @@ export default {
 				this.zoomImgHeight = rect.height * 0.3;
 				this.initData();
 				this.draw();
-				// setTimeout(() => {
-				// 	uni.canvasToTempFilePath({
-				// 		x: 0, // 起点坐标
-				// 		y: 0,
-				// 		width: data.width, // canvas 宽
-				// 		height: data.height, // canvas 高
-				// 		canvasId: 'siteCanvas', // canvas id
-				// 		success: (res) => {
-				// 			const savedFilePath = res.tempFilePath //相对路径
-				// 			this.canvasImg = savedFilePath;
-				// 		}
-				// 	})
-				// }, 100)
+				setTimeout(() => {
+					uni.canvasToTempFilePath({
+						x: 0, // 起点坐标
+						y: 0,
+						width: rect.width, // canvas 宽
+						height: rect.height, // canvas 高
+						canvasId: 'siteCanvas', // canvas id
+						success: (res) => {
+							console.log(res);
+							const savedFilePath = res.tempFilePath //相对路径
+							this.canvasImg = savedFilePath;
+						}
+					})
+				}, 100)
 			});
 		}).exec();
 	},
