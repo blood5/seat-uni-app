@@ -260,6 +260,12 @@ export default {
 						p.y = p.y * scale + ofy;
 					});
 				}
+				if(item.s['label.xoffset']) {
+					item.s['label.xoffset'] *= scale; 
+				}
+				if(item.s['label.yoffset']) {
+					item.s['label.yoffset'] *= scale; 
+				}
 			});
 		},
 		draw() {
@@ -268,32 +274,59 @@ export default {
 
 			context.setStrokeStyle("#00ff00");
 			context.setLineWidth(1);
+			context.globalAlpha = 1.0;
 
 			seats.datas.forEach((item, i) => {
-				if (item.class === "b2.ShapeNode") {
-					// context.font="30px";
-					let {
-						x,
-						y
-					} = this.getPoint(item.p.location.x, item.p.location.y);
-					//context.fillText(item.p.name, x, y);
+				if (item.class === "b2.StageNode") {
+					let { x, y } = this.getPoint(item.p.location.x, item.p.location.y);
+					let { width, height } = {
+						width: item.p.width * this.canvasScale,
+						height: item.p.height * this.canvasScale
+					}
+					context.beginPath();
+					context.setStrokeStyle('#000000');
+					context.setLineWidth(1);
+					// context.setFillStyle('#000000');
+					context.rect(x, y, width, height);
+					context.stroke();
+					context.closePath();
+
+					console.log("item.p.name=", item.p.name, x, y);
+					context.font = "8px Microsoft YaHei";
+					context.fillStyle = "#000000";
+					context.fillText(item.p.name, x + width / 2, y + height / 2);
+
 					if (item.p.points) {
 						this.drawShape(context, item.p.points);
 					}
-				} else if (item.class === "b2.Group") {
-					// context.font="30px";
-					let {
-						x,
-						y
-					} = this.getPoint(item.p.location.x, item.p.location.y);
-					//context.fillText(item.p.name, x, y);
+
+				} else if (item.class === "b2.RegionNode") {
+					let { x, y } = this.getPoint(item.p.location.x, item.p.location.y);
+					let { width, height } = {
+						width: item.p.width * this.canvasScale,
+						height: item.p.height * this.canvasScale
+					}
+					context.beginPath();
+					context.setStrokeStyle('#000000');
+					context.setLineWidth(1);
+					context.globalAlpha = 0.5; 
+					context.setFillStyle('#bacac6');
+					context.fillRect(x, y, width, height);
+					context.stroke();
+					context.closePath();
+
+					console.log("item.p.name=", item.p.name, x, y);
+					context.globalAlpha = 1.0; 
+					context.font = "8px Microsoft YaHei";
+					context.fillStyle = "#000000";
+					context.fillText(item.p.name, x + width / 2 + item.s['label.xoffset'] * this.canvasScale , y + height / 2 + item.s['label.yoffset'] * this.canvasScale);
+
 				} else if (item.class === "b2.SeatNode") {
 					let { x, y } = this.getPoint(item.p.location.x, item.p.location.y);
 					let { width, height } = {
 						width: item.p.width * this.canvasScale,
 						height: item.p.height * this.canvasScale
 					}
-
 
 					if (item.selected) {
 						// context.beginPath();
