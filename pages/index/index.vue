@@ -1,5 +1,8 @@
 <template>
 	<view class="container">
+		<!-- <div class="tooltip">
+			<span class="tooltiptext" id="tooltiptext" style="visibility:{{tooltipVisible}}">{{ tooltipText }} </span>
+		</div> -->
 		<view class="date">{{ date }}</view>
 		<view class="prices">
 			<view :key="i" v-for="(item, i) in priceTypes" class="price-type">
@@ -16,6 +19,8 @@
 			<canvas :style="{ width: canvasSize.width + 'px', height: canvasSize.height + 'px' }" canvas-id="siteCanvas"
 				id="siteCanvas"></canvas>
 		</view>
+
+		</div>
 		<view class="selected-sites">
 			<view :key="i" v-for="(item, i) in selectedSites" class="selected-site">
 				<view class="selected-site-color" :style="{ backgroundColor: item.color }"></view>
@@ -37,10 +42,18 @@
 		</view>
 		<view class="zoom-img" v-show="showZoomFlagView"
 			:style="{ width: zoomImgWidth + 'px', height: zoomImgHeight + 'px' }">
-			<img :src="canvasImg"></img>
+			<img :src="canvasImg" />
 			<view class="zoom-flag" v-if="zoomFlagWidth != 0"
 				:style="{ left: zoomFlagLeft + 'px', top: zoomFlagTop + 'px', width: zoomFlagWidth + 'px', height: zoomFlagHeight + 'px' }">
 			</view>
+		</view>
+		<view class="tooltip" v-show="showTooltipFlag"
+			:style="{ width: zoomImgWidth + 'px', height: zoomImgHeight + 'px' }">
+			<img src="../../static/shijiao.jpg" />
+			<!-- <img :src="../../static/shijiao.png">  </img> -->
+			<!-- <view class="zoom-flag" v-if="zoomFlagWidth != 0"
+				:style="{ left: zoomFlagLeft - 100  + 'px', top: zoomFlagTop + 'px', width: zoomFlagWidth + 'px', height: zoomFlagHeight + 'px' }">
+			</view> -->
 		</view>
 	</view>
 </template>
@@ -293,8 +306,8 @@ export default {
 						context.translate(x, y);
 						context.drawImage('../../static/selected.png', 0, 0, width, height);
 						context.translate(-x, -y);
-					}else {
-						
+					} else {
+
 						// console.log("item.p.name=", item.p.name, x, y);
 						// context.font = "8px Microsoft YaHei";
 						// context.fillStyle = "#000000";
@@ -337,7 +350,7 @@ export default {
 			context.draw();
 			this.showZoomFlag();
 		},
-		tap(e) {
+		handleTouchMove(e) {
 			// if(this.istouch){
 			//   return;
 			// }
@@ -364,6 +377,7 @@ export default {
 							if (!this.selectedSites.includes(item)) {
 								this.selectedSites.push(item);
 							}
+							this.showTooltip();
 						} else {
 							this.selectedSites.splice(this.selectedSites.indexOf(item), 1);
 						}
@@ -499,7 +513,6 @@ export default {
 
 		},
 		canvasTouchend(e) {
-			console.log("")
 			e.stopPropagation();
 			if (this.istouch) {
 				this.istouch = false;
@@ -508,7 +521,7 @@ export default {
 			//   title:"结束"+this.touchmove
 			// })
 			if (!this.touchmove) {
-				this.tap(e);
+				this.handleTouchMove(e);
 			}
 
 			if (endTimeout) {
@@ -585,7 +598,20 @@ export default {
 			item.selected = false;
 			this.selectedSites.splice(i, 1);
 			this.draw();
-		}
+		},
+		showTooltip() {
+			this.showTooltipFlag = true;
+			this.hideTooltip();
+		},
+		hideTooltip() {
+			if (endTimeout) {
+				clearTimeout(endTimeout);
+				endTimeout = null;
+			}
+			endTimeout = setTimeout(() => {
+				this.showTooltipFlag = false;
+			}, 1000);
+		},
 	},
 	data() {
 		return {
@@ -604,6 +630,7 @@ export default {
 			touchStart: null,
 			drawEnd: true,
 			showZoomFlagView: false,
+			showTooltipFlag: false,
 			lastTouches: [],
 			canvasOffset: {
 				x: 0,
@@ -646,7 +673,8 @@ export default {
 				type: 1,
 			}
 			],
-			selectedSites: []
+			selectedSites: [],
+			
 		}
 	},
 };
@@ -816,6 +844,55 @@ export default {
 			box-sizing: border-box;
 		}
 	}
+
+	.tooltip {
+		position: absolute;
+		top: 75px;
+		left: 10px;
+		z-index: 10000;
+		background-color: rgba(0, 0, 0, 0.6);
+		border-radius: 10px;
+		overflow: hidden;
+
+		image {
+			width: 100%;
+			height: 100%;
+		}
+
+		// .zoom-flag {
+		// 	position: absolute;
+		// 	border: 1px solid #5454ff;
+		// 	box-sizing: border-box;
+		// }
+	}
+
+	// .tooltip {
+	// 	position: relative;
+	// 	display: inline-block;
+	// 	cursor: pointer;
+	// }
+
+	// .tooltiptext {
+	// 	position: absolute;
+	// 	top: 100px;
+	// 	left: 100px;
+	// 	// margin-left: 50%;
+	// 	z-index: 99999;
+	// 	width: 120px;
+	// 	height:120px;
+	// 	background-color: #333;
+	// 	color: #fff;
+	// 	text-align: center;
+	// 	border-radius: 4px;
+	// 	padding: 5px;
+	// 	opacity: 0.6;
+	// 	transition: opacity 0.3s;
+	// }
+
+	// .tooltip:hover .tooltiptext {
+	// 	visibility: visible;
+	// 	opacity: 1;
+	// }
 
 
 }
